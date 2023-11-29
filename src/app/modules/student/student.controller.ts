@@ -17,20 +17,21 @@ const createStudent = async (req: Request, res: Response) => {
     //   });
     // }
 
-    //zod validation 
-    const validateData = studentValidationSchema.parse(studentData)
+    //zod validation
+    const validateData = studentValidationSchema.parse(studentData);
 
-    const result = await StudentService.createStudentIntoDB(validateData)
+    const result = await StudentService.createStudentIntoDB(validateData);
 
     res.status(200).json({
       success: true,
       message: 'Student is created successfully.',
       data: result,
     });
-  } catch (err) {
-    res.status(200).json({
-      success: true,
-      message: 'Something want wrong.',
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    res.status(501).json({
+      success: false,
+      message: err.message || 'Something want wrong.',
       error: err,
     });
   }
@@ -46,7 +47,7 @@ const getAllStudent = async (req: Request, res: Response) => {
     });
   } catch (err) {
     res.status(500).json({
-      success: true,
+      success: false,
       message: 'Something want wrong.',
       error: err,
     });
@@ -65,10 +66,52 @@ const getSingleStudent = async (req: Request, res: Response) => {
     });
   } catch (err) {
     res.status(500).json({
-      success: true,
+      success: false,
       message: 'Something want wrong.',
       error: err,
     });
+  }
+};
+
+const deleteStudent = async (req: Request, res: Response) => {
+  try {
+    const { studentId } = req.params;
+    const result = await StudentService.deleteStudentFromDB(studentId);
+    res.status(200).json({
+      success: true,
+      message: 'Student deleted successfully',
+      data: result,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    res.status(501).json({
+      success: false,
+      message: err.message || 'Something want wrong.',
+      error: err,
+    });
+  }
+};
+
+const updateStudent = async (req: Request, res: Response) => {
+  try {
+    const { studentId } = req.params;
+    const { student: updateData } = req.body;
+    const result = await StudentService.updateStudentFromDB(
+      studentId,
+      updateData,
+    );
+    res.status(200).json({
+      success: true,
+      message: 'Student is updated successfully.',
+      data: result,
+    });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err:any) {
+    res.status(501).json({
+     success:false,
+     message:err.message||"Something want wrong.",
+     error:err
+    })
   }
 };
 
@@ -76,4 +119,6 @@ export const StudentController = {
   createStudent,
   getAllStudent,
   getSingleStudent,
+  deleteStudent,
+  updateStudent
 };

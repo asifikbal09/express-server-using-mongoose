@@ -39,6 +39,7 @@ const isActiveEnum = z.enum(['active', 'block']);
 
 const studentValidationSchema = z.object({
   id: z.string(),
+  password: z.string().max(20),
   name: userNameValidationSchema,
   gender: genderEnum,
   email: z.string().email({ message: 'Invalid email format.' }),
@@ -52,6 +53,7 @@ const studentValidationSchema = z.object({
   localGuardian: localGuardianSchema,
   profileImg: z.string().optional(),
   isActive: isActiveEnum.default('active'),
+  isDeleted: z.boolean().default(false),
 });
 
 export default studentValidationSchema;
