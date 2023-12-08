@@ -35,25 +35,26 @@ const bloodGroupEnum = z.enum([
   'O-',
 ]);
 
-const isActiveEnum = z.enum(['active', 'block']);
-
-const studentValidationSchema = z.object({
-  id: z.string(),
-  password: z.string().max(20),
-  name: userNameValidationSchema,
-  gender: genderEnum,
-  email: z.string().email({ message: 'Invalid email format.' }),
-  dateOfBirth: z.string().optional(),
-  contactNo: z.string(),
-  emergencyContactNo: z.string(),
-  bloodGroup: bloodGroupEnum.optional(),
-  presentAddress: z.string(),
-  permanentAddress: z.string(),
-  guardian: guardianValidationSchema,
-  localGuardian: localGuardianSchema,
-  profileImg: z.string().optional(),
-  isActive: isActiveEnum.default('active'),
-  isDeleted: z.boolean().default(false),
+const createStudentValidationSchema = z.object({
+  body: z.object({
+    password: z.string().max(20),
+    student: z.object({
+      name: userNameValidationSchema,
+      gender: genderEnum,
+      email: z.string().email({ message: 'Invalid email format.' }),
+      dateOfBirth: z.string().optional(),
+      contactNo: z.string(),
+      emergencyContactNo: z.string(),
+      bloodGroup: bloodGroupEnum.optional(),
+      presentAddress: z.string(),
+      permanentAddress: z.string(),
+      guardian: guardianValidationSchema,
+      localGuardian: localGuardianSchema,
+      profileImg: z.string().optional(),
+    }),
+  }),
 });
 
-export default studentValidationSchema;
+export const studentValidations = {
+ createStudentValidationSchema,
+};
