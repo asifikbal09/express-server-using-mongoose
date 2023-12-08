@@ -31,4 +31,4 @@ router.patch(
 
 // router.put('/:studentId', StudentController.updateStudent);
 
-export const AcademicFacultyRouter = router;
+export const AcademicSemesterRouter = router;
