@@ -1,8 +1,10 @@
 import httpStatus from 'http-status';
 import { Error } from 'mongoose';
-import { TErrorSource } from '../interface/error';
+import { TErrorSource, TGenericErrorResponse } from '../interface/error';
 
-const handelValidationError = (err: Error.ValidationError) => {
+
+
+const handelValidationError = (err: Error.ValidationError):TGenericErrorResponse => {
   const errorSource: TErrorSource = Object.values(err.errors).map(
     (val: Error.ValidatorError | Error.CastError) => {
       return {
