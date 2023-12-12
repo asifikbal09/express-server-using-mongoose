@@ -4,9 +4,84 @@ import mongoose from 'mongoose';
 import AppError from '../../errors/AppError';
 import httpStatus from 'http-status';
 import { User } from '../user/user.model';
+import QueryBuilder from '../../builder/QueryBuilder';
 
-const getAllStudentsFromDB = async () => {
-  const result = await Student.find().populate('admissionSemester');
+const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
+  // let searchTerm = '';
+
+  // if (query.searchTerm) {
+  //   searchTerm = query?.searchTerm as string;
+  // }
+
+  const studentSearchableFields = ['email', 'name.firstName', 'presentAddress'];
+
+  // const queryObj = { ...query };
+
+  // const searchQuery = Student.find({
+  //   $or: studentSearchableFields.map((field) => ({
+  //     [field]: { $regex: searchTerm, $options: 'i' },
+  //   })),
+  // });
+
+  // //filtering
+  // const excludeField = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
+
+  // excludeField.forEach((el) => delete queryObj[el]);
+
+  // const filterQuery = searchQuery.find(queryObj).populate('admissionSemester');
+  // // .populate({
+  // //   path: 'academicDepartment',
+  // //   populate: {
+  // //     path: 'academicFaculty',
+  // //   },
+  // // });
+
+  // //sorting
+
+  // let sort = '-createdAt';
+  // if (query?.sort) {
+  //   sort = query?.sort as string;
+  // }
+
+  // const sortQuery = filterQuery.sort(sort);
+
+  // //limiting
+  // let limit = 1;
+  // if (query.limit) {
+  //   limit = query?.limit as number;
+  // }
+
+  // //Pagination
+  // let page = 1;
+  // let skip = 0;
+  // if (query.page) {
+  //   page = Number(query.page);
+  //   skip = (page - 1) * limit;
+  // }
+
+  // const pageQuery = sortQuery.skip(skip);
+
+  // const limitQuery = pageQuery.limit(limit);
+
+  // //field limiting
+  // let fields = '-__v';
+  // if (query.fields) {
+  //   fields = (query.fields as string).split(',').join(' ');
+  // }
+
+  // const fieldLimitingQuery = await limitQuery.select(fields);
+
+  // return fieldLimitingQuery;
+
+  const studentQuery = new QueryBuilder(Student.find(), query)
+    .search(studentSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await studentQuery.modelQuery;
+
   return result;
 };
 

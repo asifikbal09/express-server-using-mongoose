@@ -11,6 +11,8 @@ import handleZodError from '../errors/handleZodError';
 import handelValidationError from '../errors/handelValidationError';
 import handelCastError from '../errors/handelCastError';
 import handleDuplicateError from '../errors/handelDuplicateId';
+import AppError from '../errors/AppError';
+import { Error } from 'mongoose';
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   let statusCode = err.statusCode || 500;
@@ -25,7 +27,7 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
 
   if (err instanceof ZodError) {
     const simplifiedError = handleZodError(err);
-     
+
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
     errorSource = simplifiedError?.errorSource;
@@ -47,13 +49,30 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
     errorSource = simplifiedError?.errorSource;
+  } else if (err instanceof AppError) {
+    statusCode = err?.statusCode;
+    message = err?.message;
+    errorSource = [
+      {
+        path: '',
+        message: err?.message,
+      },
+    ];
+  } else if (err instanceof Error) {
+    message = err?.message;
+    errorSource = [
+      {
+        path: '',
+        message: err?.message,
+      },
+    ];
   }
 
   return res.status(statusCode).json({
     success: false,
     message,
     errorSource,
-    // err,
+    err,
     stack: config.NODE_ENV === 'development' ? err?.stack : null,
   });
 };
